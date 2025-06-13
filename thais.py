@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import replicate
 import os
 from PIL import Image
@@ -59,9 +60,6 @@ if st.button("🚀 Aprimorar Render"):
                 }
             )
 
-            st.write("URL da imagem:", getattr(output[0], "url", "Sem URL"))
-            st.image(getattr(output[0], "url", "Sem URL"))
-
             # Baixa a imagem da URL
             response = requests.get(getattr(output[0], "url", "Sem URL"))
 
@@ -80,3 +78,32 @@ if st.button("🚀 Aprimorar Render"):
                 file_name="render_aprimorado.png",
                 mime="image/png"
             )
+
+
+            # Gera o código HTML com o antes e depois
+            html_code = f"""
+            <link rel="stylesheet" type="text/css" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css">
+            <div id="juxtapose" style="width: 100%; height: 500px;"></div>
+            <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
+            <script>
+            new juxtapose.JXSlider('#juxtapose',
+            [
+                {{
+                src: "{data_uri}",
+                label: "Antes"
+                }},
+                {{
+                src: "{getattr(output[0], "url", "Sem URL")}",
+                label: "Depois"
+                }}
+            ],
+            {{
+                animate: true,
+                showLabels: true,
+                showCredits: false,
+                makeResponsive: true
+            }});
+            </script>
+            """
+
+            components.html(html_code, height=550)
