@@ -7,20 +7,66 @@ import io
 import base64
 import requests
 
+st.markdown("""
+    <style>
+    /* Reduz padding do corpo principal */
+    .block-container {
+        padding-top: 1rem;
+    }
+
+    .main {
+        padding-top: 0rem;
+    }
+                          
+        button[kind="secondary"] {
+            width: 100%;
+            height: 50px;
+            border-radius: 10px;
+            font-size: 16px;
+       }
+    </style>
+""", unsafe_allow_html=True)
+
 # API key
 REPLICATE_API_TOKEN = st.secrets["REPLICATE_API_TOKEN"]
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
 st.title("🏛️ ThAIs: Tool Hyperrealistic Architectural Image Simulation")
 
-uploaded_file = st.file_uploader("📸 Envie seu render", type=["png", "jpg", "jpeg"])
+st.sidebar.markdown("## ⚙️ Configurações")
+uploaded_file = st.sidebar.file_uploader("📸 Envie seu render", type=["png", "jpg", "jpeg"])
 
-downscaling = st.selectbox("🎨 Super-resolução", [False, True])
-downscaling_resolution = st.selectbox("🎨 Resolução", [1280, 1024, 768, 512])
-creativity = st.slider("✨ CRIATIVIDADE (Define o nível de criatividade do modelo ao transformar a imagem. Valores baixos preservam mais a imagem original; altos mudam mais.)", 0.0, 1.0, 0.35)
-resemblance = st.slider("🧠 RESEMBLANCE (Define o quanto a imagem gerada deve se parecer com a original)", 0.0, 1.0, 0.6)
-sharpen = st.slider(" SHARPEN (Intensidade de nitidez aplicada no pós-processamento)", 0.0, 1.0, 0.1)
-dynamic = st.slider(" DYNAMIC (ajusta o contraste ou gama)", 0.00, 50.0, 6.00)
+st.sidebar.markdown("🎨 **Resolução**")
+# Layout 2x2 com botões
+col1, col2 = st.sidebar.columns(2)
+
+with col1:
+    btn_1280 = st.button("1280", key="res_1280")
+with col2:
+    btn_1024 = st.button("1024", key="res_1024")
+with col1:
+    btn_768 = st.button("768", key="res_768")
+with col2:
+    btn_512 = st.button("512", key="res_512")
+
+# Definindo a seleção com base no botão clicado
+if btn_1280:
+    downscaling_resolution = 1280
+elif btn_1024:
+    downscaling_resolution = 1024
+elif btn_768:
+    downscaling_resolution = 768
+elif btn_512:
+    downscaling_resolution = 512
+else:
+    downscaling_resolution = 1280  # padrão
+
+#st.sidebar.title("⚙️ Configurações")
+#downscaling_resolution = st.sidebar.radio("🎨 Resolução", [1280, 1024, 768, 512])
+creativity = st.sidebar.slider("🧠 CRIATIVIDADE (Define o nível de criatividade do modelo ao transformar a imagem. )", 0.0, 1.0, 0.35)
+resemblance = st.sidebar.slider("✨ RESEMBLANCE (Define o quanto a imagem gerada deve se parecer com a original)", 0.0, 1.0, 0.8)
+sharpen = st.sidebar.slider("⚙️ SHARPEN (Intensidade de nitidez aplicada no pós-processamento)", 0.0, 1.0, 0.2)
+dynamic = st.sidebar.slider("💄 DYNAMIC (ajusta o contraste ou gama)", 0.00, 50.0, 7.00)
 
 if st.button("🚀 Aprimorar Render"):
     if uploaded_file:
@@ -47,7 +93,7 @@ if st.button("🚀 Aprimorar Render"):
                     "scheduler": "DPM++ 3M SDE Karras",
                     "creativity": creativity,
                     "lora_links": "",
-                    "downscaling": downscaling,
+                    "downscaling": False,
                     "resemblance": resemblance,
                     "scale_factor": 2,
                     "tiling_width": 112,
@@ -59,26 +105,6 @@ if st.button("🚀 Aprimorar Render"):
                     "downscaling_resolution": downscaling_resolution,
                 }
             )
-
-            # Baixa a imagem da URL
-            response = requests.get(getattr(output[0], "url", "Sem URL"))
-
-            # Carrega como imagem PIL
-            img = Image.open(io.BytesIO(response.content))
-
-            # Converte para bytes
-            img_bytes = io.BytesIO()
-            img.save(img_bytes, format="PNG")
-            img_bytes.seek(0)
-
-            # Cria botão de download
-            st.download_button(
-                label="📥 Baixar imagem",
-                data=img_bytes,
-                file_name="render_aprimorado.png",
-                mime="image/png"
-            )
-
 
             # Gera o código HTML com o antes e depois
             html_code = f"""
@@ -107,3 +133,21 @@ if st.button("🚀 Aprimorar Render"):
             """
 
             components.html(html_code, height=550)
+
+            # Baixa a imagem da URL
+            response = requests.get(getattr(output[0], "url", "Sem URL"))
+
+            # Carrega como imagem PIL
+            img = Image.open(io.BytesIO(response.content))
+
+            # Converte para bytes
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format="PNG")
+            img_bytes.seek(0)
+
+            # Cria botão de download
+            
+            with st.container():
+                st.markdown("<div style='margin-top: -10px;'>", unsafe_allow_html=True)
+                st.download_button(label="📥 Baixar imagem", data=img_bytes, file_name="render_aprimorado.png", mime="image/png")
+                st.markdown("</div>", unsafe_allow_html=True)

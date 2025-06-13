@@ -1,0 +1,7 @@
+[theme]
+base="dark"  # ou "light"
+primaryColor="#1EBB8B"  # cor dos botões, sliders, switches
+backgroundColor="#0E1117"  # fundo principal
+secondaryBackgroundColor="#262730"  # fundo de containers
+textColor="#FAFAFA"  # cor dos textos
+font="sans serif"  # ou "monospace", "serif"
