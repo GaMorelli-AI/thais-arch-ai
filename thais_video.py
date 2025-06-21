@@ -83,7 +83,6 @@ def run_projeto5():
                         "start_image": data_uri_1,
                         "end_image": data_uri_2,
                         "aspect_ratio": aspect_ratio,
-                        "quality": "1080p",
                         "negative_prompt": ""
                     }
                 )
