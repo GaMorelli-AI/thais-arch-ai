@@ -2,3 +2,4 @@ streamlit
 replicate
 Pillow
 requests
+deep-translator
