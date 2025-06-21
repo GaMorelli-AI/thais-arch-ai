@@ -8,6 +8,8 @@ import base64
 import requests
 from deep_translator import GoogleTranslator
 
+def traduzir_para_ingles(prompt_pt):
+    return GoogleTranslator(source='auto', target='en').translate(prompt_pt)
 
 def run_projeto3():
 
@@ -38,9 +40,6 @@ def run_projeto3():
     st.title("🏛️ ThAIs: Tool Hyperrealistic Architectural Image Simulation")
 
     st.sidebar.markdown("## ⚙️ Configurações")
-
-    def traduzir_para_ingles(prompt_pt):
-        return GoogleTranslator(source='auto', target='en').translate(prompt_pt)
 
     # Parâmetros
     prompt_pt = st.text_input("Prompt:")
