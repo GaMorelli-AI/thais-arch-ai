@@ -47,7 +47,7 @@ def run_projeto5():
     # Parâmetros
     prompt_pt = st.text_input("Prompt:")
     aspect_ratio = st.sidebar.selectbox("🎨 Proporção", ["9:16","16:9","1:1"], index=0)
-    duration = st.sidebar.selectbox("⏰ Duração", ["5","10"], index=0)
+    duration = st.sidebar.selectbox("⏰ Duração", [5,10], index=0)
 
     if st.button("🚀 Gerar Motion"):
         if uploaded_file_1:
@@ -83,6 +83,7 @@ def run_projeto5():
                         "start_image": data_uri_1,
                         "end_image": data_uri_2,
                         "aspect_ratio": aspect_ratio,
+                        "quality": "1080p",
                         "negative_prompt": ""
                     }
                 )
